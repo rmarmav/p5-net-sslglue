@@ -200,6 +200,11 @@ BEGIN {
 	    close($listen);
 	}
 
+	# Re-use SSL context if present
+	my $sock = ${*$self}{sock};
+	my $ssl_ctx = ${*$sock}{'_SSL_ctx'};
+	${*$self}{'_SSL_ctx'} = $ssl_ctx if $ssl_ctx;
+
 	if (( ${*$self}{net_ftp_tlstype} || '') eq 'P'
 	    && ! $conn->start_SSL( $self->is_ssl ? ( 
 		    SSL_reuse_ctx => $self, 
